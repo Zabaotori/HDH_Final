@@ -41,7 +41,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
     proc_name[i] = '\0'; 
     printf("The procname retrieved from memregionid %d is \"%s\"\n", memrg, proc_name);
 
-    // Ngăn tiến trình tự huỷ chính nó
+    // avoid kill itself
     char *proc_get_name = strrchr(caller->path, '/');
     printf("The syskill name is %s\n", proc_get_name + 1);
     if (strcmp(proc_name, proc_get_name + 1) == 0) {
@@ -107,7 +107,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
         }
     }
 
-    // Giải phóng tài nguyên các tiến trình đã tìm được
+    // free the found processes
     if (index > 0) {
         printf("Process with name %s was killed\n", proc_name);
         for (int i = 0; i < index; i++){
