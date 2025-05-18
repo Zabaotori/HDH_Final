@@ -27,7 +27,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
     //@memrg: ID of mem region that store proc name need to kill
     //@proc_name: name of proc need
     
-    // Đọc tên tiến trình từ bộ nhớ user
+    // Read process name from user memory
     int i = 0;
     data = 0;
     while (1) {
@@ -38,7 +38,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
         }
         proc_name[i++] = (char)data;
     }
-
+    proc_name[i] = '\0'; 
     printf("The procname retrieved from memregionid %d is \"%s\"\n", memrg, proc_name);
 
     // Ngăn tiến trình tự huỷ chính nó
@@ -51,13 +51,13 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
     }
 
     struct pcb_t *kill_process[MAX_PRIO];
-    //@pcb_t: danh sách các tiến trình đã tìm thấy
+    //@pcb_t: the list of processes were found
     int index = 0;
 
     struct queue_t *run_list = caller->running_list;
     struct queue_t *mlq = caller->mlq_ready_queue;
 
-    // Xoá khỏi run_list
+    // Remove from run_list
     for (int i = 0; i < run_list->size; i++) {
         char *name = strrchr(run_list->proc[i]->path, '/');
         if (name && strcmp(name + 1, proc_name) == 0){
@@ -72,7 +72,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
                 kill_process[index++] = run_list->proc[i];
             }
 
-            // Dịch các phần tử còn lại về trước
+            // Shift remaining elements
             for (int j = i; j < run_list->size - 1; j++) {
                 run_list->proc[j] = run_list->proc[j + 1];
             }
@@ -81,7 +81,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
         }
     }
 
-    // Xoá khỏi mlq_ready_queue
+    // Remove from mlq_ready_queue
     for (int i = 0; i < MAX_PRIO; i++) {
         for (int j = 0; j < mlq[i].size; j++) {
             char *name = strrchr(mlq[i].proc[j]->path, '/');
@@ -97,6 +97,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
                     kill_process[index++] = mlq[i].proc[j];
                 }
 
+                // Shift remaining elements
                 for (int k = j; k < mlq[i].size - 1; k++) {
                     mlq[i].proc[k] = mlq[i].proc[k + 1];
                 }
@@ -111,7 +112,9 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
         printf("Process with name %s was killed\n", proc_name);
         for (int i = 0; i < index; i++){
             if (kill_process[i] != NULL && kill_process[i]->pc != kill_process[i]->code->size) {
-                free(kill_process[i]);
+                __free(kill_process[i], 0, memrg);
+                kill_process[i] = NULL;
+                // free(kill_process[i]);
             }
         }
     }
@@ -121,8 +124,4 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
 
     pthread_mutex_unlock(&lock);
     return 0;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> c5efa31 (update)
