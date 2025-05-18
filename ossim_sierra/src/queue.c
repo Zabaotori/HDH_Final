@@ -23,15 +23,22 @@ void enqueue(struct queue_t * q, struct pcb_t * proc) {
 }
 
 struct pcb_t * dequeue(struct queue_t * q) {
-        /* TODO: return a pcb whose prioprity is the highest
-         * in the queue [q] and remember to remove it from q
-         * */
-        if(empty(q)) return NULL;
-        struct pcb_t * proc = q -> proc[0];
-        int i = 0;     
-        for(i = 0; i < q -> size - 1; i++){
-                q -> proc[i] = q -> proc[i + 1];
+        if(q == NULL || empty(q)) return NULL;
+
+        uint32_t max_prio = UINT32_MAX;
+
+        struct pcb_t * max_proc = NULL;
+        int idx = 0;
+        for (int i = 0; i < q->size; i++) {
+                if (q->proc[i]->prio < max_prio) {
+                        max_prio = q->proc[i]->prio;
+                        max_proc = q->proc[i];
+                        idx = i;
+                }
         }
-        q -> size--;
-	return proc;
+        for(int i = idx; i < q->size - 1; i++) {
+                q->proc[i] = q->proc[i + 1];
+        }
+        q->size--;
+        return max_proc;
 }

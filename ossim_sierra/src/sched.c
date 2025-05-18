@@ -48,19 +48,26 @@ void init_scheduler(void) {
  */
 struct pcb_t * get_mlq_proc(void) {
 	struct pcb_t * proc = NULL;
-	/*TODO: get a process from PRIORITY [ready_queue].
-	 * Remember to use lock to protect the queue.
-	 * */
 	unsigned long prio;
 	pthread_mutex_lock(&queue_lock);
 	for (prio = 0; prio < MAX_PRIO; prio++) {
-		if (!empty(&mlq_ready_queue[prio])) {
+		if (!empty(&mlq_ready_queue[prio]) && (slot[prio] > 0)) {
+			slot[prio]--;
 			proc = dequeue(&mlq_ready_queue[prio]);
 			break;
 		}
 	}
+	if (proc == NULL) {
+		for (prio = 0; prio < MAX_PRIO; prio++) {
+			if (!empty(&mlq_ready_queue[prio])) {
+				slot[prio] = MAX_PRIO - prio;
+				proc = dequeue(&mlq_ready_queue[prio]);
+				break;
+			}
+		}
+	}
 	pthread_mutex_unlock(&queue_lock);
-
+	
 	return proc;	
 }
 
@@ -86,6 +93,9 @@ void put_proc(struct pcb_t * proc) {
 	proc->running_list = & running_list;
 
 	/* TODO: put running proc to running_list */
+	pthread_mutex_lock(&queue_lock);
+	enqueue(&running_list, proc);
+	pthread_mutex_unlock(&queue_lock);
 	
 
 
@@ -98,6 +108,9 @@ void add_proc(struct pcb_t * proc) {
 	proc->running_list = & running_list;
 
 	/* TODO: put running proc to running_list */
+	pthread_mutex_lock(&queue_lock);
+	enqueue(&running_list, proc);
+	pthread_mutex_unlock(&queue_lock);
 
 	return add_mlq_proc(proc);
 }
@@ -107,6 +120,9 @@ struct pcb_t * get_proc(void) {
 	/*TODO: get a process from [ready_queue].
 	 * Remember to use lock to protect the queue.
 	 * */
+	pthread_mutex_lock(&queue_lock);
+	proc = dequeue(&ready_queue);
+	pthread_mutex_unlock(&queue_lock);
 	return proc;
 }
 
@@ -117,6 +133,7 @@ void put_proc(struct pcb_t * proc) {
 	/* TODO: put running proc to running_list */
 
 	pthread_mutex_lock(&queue_lock);
+	enqueue(&running_list, proc);
 	enqueue(&run_queue, proc);
 	pthread_mutex_unlock(&queue_lock);
 }
@@ -128,6 +145,7 @@ void add_proc(struct pcb_t * proc) {
 	/* TODO: put running proc to running_list */
 
 	pthread_mutex_lock(&queue_lock);
+	enqueue(&running_list, proc);
 	enqueue(&ready_queue, proc);
 	pthread_mutex_unlock(&queue_lock);	
 }

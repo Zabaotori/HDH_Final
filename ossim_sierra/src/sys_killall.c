@@ -121,4 +121,8 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
 
     pthread_mutex_unlock(&lock);
     return 0;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> c5efa31 (update)

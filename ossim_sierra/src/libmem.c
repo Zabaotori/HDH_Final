@@ -303,7 +303,7 @@ int pg_getval(struct mm_struct *mm, int addr, BYTE *data, struct pcb_t *caller)
 
   // int phyaddr = (fpn << NBITS(PAGING_PAGESZ)) | PAGING_OFFST(addr);
 
-  int phyaddr = (fpn << NBITS(PAGING_PAGESZ)) | PAGING_OFFST(addr);
+  int phyaddr = (fpn << (PAGING_ADDR_OFFST_HIBIT + 1)) | PAGING_OFFST(addr);
 
   struct sc_regs regs;
   regs.a1 = SYSMEM_IO_READ;
@@ -535,12 +535,6 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
       newrg->rg_start = rgit->rg_start;
       newrg->rg_end = rgit->rg_start + size;
       rgit->rg_start += size;
-
-      // if (rgit->rg_start == rgit->rg_end)
-      // {
-      //   cur_vma->vm_freerg_list = rgit->rg_next;
-      //   free(rgit);
-      // }
 
       return 0;
     }
