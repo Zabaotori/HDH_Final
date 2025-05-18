@@ -112,9 +112,7 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
         printf("Process with name %s was killed\n", proc_name);
         for (int i = 0; i < index; i++){
             if (kill_process[i] != NULL && kill_process[i]->pc != kill_process[i]->code->size) {
-                __free(kill_process[i], 0, memrg);
-                kill_process[i] = NULL;
-                // free(kill_process[i]);
+                free(kill_process[i]);
             }
         }
     }
