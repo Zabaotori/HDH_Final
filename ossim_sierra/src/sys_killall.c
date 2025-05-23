@@ -1,31 +1,31 @@
-// /*
-//  * Copyright (C) 2025 pdnguyen of HCMC University of Technology VNU-HCM
-//  */
+/*
+ * Copyright (C) 2025 pdnguyen of HCMC University of Technology VNU-HCM
+ */
 
-// /* Sierra release
-//  * Source Code License Grant: The authors hereby grant to Licensee
-//  * personal permission to use and modify the Licensed Source Code
-//  * for the sole purpose of studying while attending the course CO2018.
-//  */
+/* Sierra release
+ * Source Code License Grant: The authors hereby grant to Licensee
+ * personal permission to use and modify the Licensed Source Code
+ * for the sole purpose of studying while attending the course CO2018.
+ */
 
-// #include "common.h"
-// #include "syscall.h"
-// #include "stdio.h"
-// #include "libmem.h"
+#include "common.h"
+#include "syscall.h"
+#include "stdio.h"
+#include "libmem.h"
 
-// #include "string.h"
-// #include "queue.h"
-// #include "sched.h"
-// #include "pthread.h"
-// #include "stdlib.h"
+#include "string.h"
+#include "queue.h"
+#include "sched.h"
+#include "pthread.h"
+#include "stdlib.h"
 
-// static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
-// int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
-//     char proc_name[100];
-//     uint32_t data, memrg = regs->a1;
-//     //@memrg: ID of mem region that store proc name need to kill
-//     //@proc_name: name of proc need
+int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
+    char proc_name[100];
+    uint32_t data, memrg = regs->a1;
+    //@memrg: ID of mem region that store proc name need to kill
+    //@proc_name: name of proc need
     
     // Read process name from user memory
     int i = 0;
