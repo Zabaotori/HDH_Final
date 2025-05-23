@@ -54,8 +54,8 @@ int __sys_killall(struct pcb_t *caller, struct sc_regs *regs) {
     //@pcb_t: the list of processes were found
     int index = 0;
 
-//     struct queue_t *run_list = caller->running_list;
-//     struct queue_t *mlq = caller->mlq_ready_queue;
+    struct queue_t *run_list = caller->running_list;
+    struct queue_t *mlq = caller->mlq_ready_queue;
 
     // Remove from run_list
     for (int i = 0; i < run_list->size; i++) {
