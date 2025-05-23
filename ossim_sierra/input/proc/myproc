@@ -1,0 +1,4 @@
+20 3
+print "I am myproc"
+sleep 1000
+end

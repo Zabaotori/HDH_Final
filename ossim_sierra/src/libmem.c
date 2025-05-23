@@ -29,8 +29,7 @@ static pthread_mutex_t mmvm_lock = PTHREAD_MUTEX_INITIALIZER;
  *@rg_elmt: new region
  *
  */
-int enlist_vm_freerg_list(struct mm_struct *mm, struct vm_rg_struct *rg_elmt)
-{
+int enlist_vm_freerg_list(struct mm_struct *mm, struct vm_rg_struct *rg_elmt) {
   struct vm_rg_struct *rg_node = mm->mmap->vm_freerg_list;
 
   if (rg_elmt->rg_start >= rg_elmt->rg_end)
@@ -132,8 +131,7 @@ int __alloc(struct pcb_t *caller, int vmaid, int rgid, int size, int *alloc_addr
  *@size: allocated size
  *
  */
-int __free(struct pcb_t *caller, int vmaid, int rgid)
-{
+int __free(struct pcb_t *caller, int vmaid, int rgid) {
   if (rgid < 0 || rgid > PAGING_MAX_SYMTBL_SZ)
     return -1;
   pthread_mutex_lock(&mmvm_lock);
